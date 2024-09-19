@@ -15,14 +15,14 @@ name_columns = arr[0][9::]
 # print(name_columns)
 
 # print(columns)
-def my_timetable_all(username,arr):
+def my_timetable_all(username):
     for el in arr:
         if el[2] == username:
             for i in range(len(name_columns)):
                 print(name_columns[i], ' ', el[i+9])
             break
 
-def my_timetable_continue(username,arr):
+def my_timetable_continue(username):
     for el in arr:
         if el[2] == username:
             print('Дальнейшее расписание: ')
@@ -34,7 +34,7 @@ def my_timetable_continue(username,arr):
                 print(name_columns[i], ' ', el[i+9])
             break
 
-def my_timetable_now(username,arr):
+def my_timetable_now(username):
     for el in arr:
         if el[2] == username:
             for i in range(len(name_columns)-1):
@@ -43,7 +43,7 @@ def my_timetable_now(username,arr):
                     break
             break
 
-def timetable_by_familia(familia,arr):
+def timetable_by_familia(familia):
     for el in arr:
         if el[0] == familia:
             print(el[0],' ', el[1])
@@ -52,7 +52,7 @@ def timetable_by_familia(familia,arr):
             my_timetable_now(el[2], arr)
             my_timetable_continue(el[2],arr)
 
-def timetable_department(name, arr):
+def timetable_department(name):
     print(name.upper())
     for el in arr:
         if len(el[5].split(',')) > 1:
