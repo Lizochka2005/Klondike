@@ -70,12 +70,8 @@ def timetable_by_username(username):
 def timetable_department(name):
     text = name.upper() + '\n'
     for el in arr:
-        if len(el[5].split(',')) > 1:
-            a = el[5].split(',')
-            if name.lower() in a:
-                text += (el[0] + ' ' + el[1] + ':').upper()
-                text += 'Сейчас на точке: '
-                text += my_timetable_now(el[2])
-                text += my_timetable_continue(el[2])
-                return text
-
+        a = el[5].split(',')
+        if name.lower() in a:
+             text += (el[0] + ' ' + el[1] + ': ').upper()
+             text += str(my_timetable_now(el[2]))
+    return text
