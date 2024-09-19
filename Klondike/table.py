@@ -16,13 +16,15 @@ name_columns = arr[0][9::]
 
 # print(columns)
 def my_timetable_all(username):
+    text = ''
     for el in arr:
         if el[2] == username:
             for i in range(len(name_columns)):
-                print(name_columns[i], ' ', el[i+9])
-            break
+                text += str(name_columns[i]) + ' ' + el[i+9] +'\n'
+            return text
 
 def my_timetable_continue(username):
+    text = ''
     for el in arr:
         if el[2] == username:
             print('Дальнейшее расписание: ')
@@ -31,35 +33,49 @@ def my_timetable_continue(username):
                     index = i
                     break
             for i in range(index, len(name_columns)):
-                print(name_columns[i], ' ', el[i+9])
-            break
+                text += str(name_columns[i]) + ' ' + el[i+9] +'\n'
+            return text
 
 def my_timetable_now(username):
+    text = ''
     for el in arr:
         if el[2] == username:
             for i in range(len(name_columns)-1):
                 if name_columns[i] <= time and name_columns[i+1] > time:
-                    print(name_columns[i], ' ', el[i+9])
-                    break
-            break
+                    text += str(name_columns[i]) + ' ' + el[i+9] +'\n'
+                    return text
 
 def timetable_by_familia(familia):
+    text = ''
     for el in arr:
         if el[0] == familia:
-            print(el[0],' ', el[1])
-            print('Отдел: ', el[5])
-            print('Сейчас на точке: ', end = ' ')
-            my_timetable_now(el[2], arr)
-            my_timetable_continue(el[2],arr)
+            text += el[0] + ' ' + el[1] + '\n'
+            text += 'Отдел: ' + el[5] + '\n'
+            text += 'Сейчас на точке: '
+            text += my_timetable_now(el[2])
+            text += my_timetable_continue(el[2])
+            return text
+
+def timetable_by_username(username):
+    text = ''
+    for el in arr:
+        if el[2] == username:
+            text += el[0] + ' ' + el[1] + '\n'
+            text += 'Отдел: ' + el[5] + '\n'
+            text += 'Сейчас на точке: '
+            text += my_timetable_now(el[2])
+            text += my_timetable_continue(el[2])
+            return text
 
 def timetable_department(name):
-    print(name.upper())
+    text = name.upper() + '\n'
     for el in arr:
         if len(el[5].split(',')) > 1:
             a = el[5].split(',')
             if name.lower() in a:
-                print((el[0] + ' ' + el[1] + ':').upper())
-                print('Сейчас на точке: ', end=' ')
-                my_timetable_now(el[2], arr)
-                my_timetable_continue(el[2], arr)
+                text += (el[0] + ' ' + el[1] + ':').upper()
+                text += 'Сейчас на точке: '
+                text += my_timetable_now(el[2])
+                text += my_timetable_continue(el[2])
+                return text
 
