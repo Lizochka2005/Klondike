@@ -1,25 +1,68 @@
 from telegram import Update, ReplyKeyboardMarkup
-from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, CallbackContext
+from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, CallbackContext, JobQueue
+from datetime import datetime, timedelta
+import asyncio
 
-main_keyboard = [['Мое расписание', 'Расписание других организаторов', 'Информация об участнике']]
-my_schedule_keyboard = [['Нынешняя точка', 'Полное расписание', 'Мое дальнейшее расписание'], ['Назад']]
+
+main_keyboard = [['Мое расписание', 'Расписание других организаторов', 'Информация об участнике'],
+                 ['Подключить напоминания', 'Отключить напоминания']]
+my_schedule_keyboard = [['Текущая точка', 'Дальнейшее расписание', 'Все расписание'], ['Назад']]
 organizers_schedule_keyboard = [['Расписание всего отдела', 'Расписание конкретного организатора'], ['Назад']]
 participant_info_keyboard = [['По фамилии', 'По нику в ТГ', 'По номеру комнаты'], ['Назад']]
+
+reminder_users = set()
 
 
 async def start(update: Update, context: CallbackContext) -> None:
     await update.message.reply_text(
-        "Чинааазес, сюдаааа:",
+        "Мяу:",
         reply_markup=ReplyKeyboardMarkup(main_keyboard, one_time_keyboard=True, resize_keyboard=True)
     )
 
 
 async def message_handler(update: Update, context: CallbackContext) -> None:
     text = update.message.text
+    username = update.message.from_user.username
 
     if text == 'Мое расписание':
-        await update.message.reply_text("Введите фамилию с большой буквы:")
-        context.user_data['state'] = 'my_schedule_waiting_surname'
+        await update.message.reply_text("Введите вашу фамилию с большой буквы:")
+        context.user_data['state'] = 'waiting_for_surname'
+
+    elif context.user_data.get('state') == 'waiting_for_surname':
+        context.user_data['surname'] = text 
+        await update.message.reply_text(
+            "Выберите действие:",
+            reply_markup=ReplyKeyboardMarkup(my_schedule_keyboard, one_time_keyboard=True, resize_keyboard=True)
+        )
+        context.user_data['state'] = 'schedule_options'
+
+    elif context.user_data.get('state') == 'schedule_options':
+        surname = context.user_data.get('surname')
+
+        if text == 'Текущая точка':
+            await update.message.reply_text("Текущая точка: (информация из базы данных)")
+
+        elif text == 'Дальнейшее расписание':
+            await update.message.reply_text('Дальнейшее расписание: (информация из базы данных)')
+
+        elif text == 'Все расписание':
+            await update.message.reply_text("Полное расписание: (информация из базы данных)")
+
+        elif text == 'Назад':
+            await update.message.reply_text(
+                "Выберите действие:",
+                reply_markup=ReplyKeyboardMarkup(main_keyboard, one_time_keyboard=True, resize_keyboard=True)
+            )
+            context.user_data['state'] = None
+
+    elif text == 'Подключить напоминания':
+        reminder_users.add(username)
+        await update.message.reply_text(
+            "Бот будет напоминать за 10 минут до точки и в момент начала.")
+
+    elif text == 'Отключить напоминания':
+        reminder_users.discard(username)
+        await update.message.reply_text("Вы отключили напоминания.")
 
     elif text == 'Расписание других организаторов':
         await update.message.reply_text(
@@ -33,70 +76,31 @@ async def message_handler(update: Update, context: CallbackContext) -> None:
             reply_markup=ReplyKeyboardMarkup(participant_info_keyboard, one_time_keyboard=True, resize_keyboard=True)
         )
 
-    elif text == 'Нынешняя точка':
-        await update.message.reply_text("Текущая точка.")
-
-    elif text == 'Полное расписание':
-        await update.message.reply_text("Полное расписание.")
-
-    elif text == 'Мое дальнейшее расписание':
-        await update.message.reply_text("Дальнейшее расписание.")
-
-    elif text == 'Расписание всего отдела':
-        await update.message.reply_text("Введите название отдела:")
-        context.user_data['state'] = 'department_schedule_waiting_name'
-
-    elif text == 'Расписание конкретного организатора':
-        await update.message.reply_text("Введите фамилию организатора с большой буквы:")
-        context.user_data['state'] = 'organizer_schedule_waiting_surname'
-
-    elif text == 'По фамилии':
-        await update.message.reply_text("Введите фамилию с большой буквы:")
-        context.user_data['state'] = 'participant_info_waiting_surname'
-
-    elif text == 'По нику в ТГ':
-        await update.message.reply_text("Введите Telegram ник:")
-        context.user_data['state'] = 'participant_info_waiting_nickname'
-
-    elif text == 'По номеру комнаты':
-        await update.message.reply_text("Введите номер комнаты:")
-        context.user_data['state'] = 'participant_info_waiting_room'
-
     elif text == 'Назад':
         await update.message.reply_text(
             "Выберите действие:",
             reply_markup=ReplyKeyboardMarkup(main_keyboard, one_time_keyboard=True, resize_keyboard=True)
         )
-
     else:
-        state = context.user_data.get('state')
-        if state == 'my_schedule_waiting_surname':
-            await update.message.reply_text(f"Ваше расписание для фамилии {text}: [здесь будет информация]")
-            context.user_data['state'] = None
-        elif state == 'department_schedule_waiting_name':
-            await update.message.reply_text(f"Расписание для отдела {text}: [здесь будет информация]")
-            context.user_data['state'] = None
-        elif state == 'organizer_schedule_waiting_surname':
-            await update.message.reply_text(f"Расписание для организатора {text}: [здесь будет информация]")
-            context.user_data['state'] = None
-        elif state == 'participant_info_waiting_surname':
-            await update.message.reply_text(f"Информация об участнике {text}: [здесь будет информация]")
-            context.user_data['state'] = None
-        elif state == 'participant_info_waiting_nickname':
-            await update.message.reply_text(f"Информация об участнике {text}: [здесь будет информация]")
-            context.user_data['state'] = None
-        elif state == 'participant_info_waiting_room':
-            await update.message.reply_text(
-                f"Информация об участнике {text}: [здесь будет информация]")
-            context.user_data['state'] = None
-        else:
-            await update.message.reply_text("Команда не распознана.")
+        await update.message.reply_text("Команда не распознана.")
+
+
+async def reminder_job(context: CallbackContext) -> None:
+    current_time = datetime.now()
+    pass
 
 
 if __name__ == '__main__':
     application = ApplicationBuilder().token("7767795518:AAHyp07SVczH6joO3zD2_VbrtRZd24yzlqQ").build()
 
+    job_queue = JobQueue()
+    job_queue.set_application(application)
+
+    job_queue.run_repeating(reminder_job, interval=60, first=10)
+
     application.add_handler(CommandHandler("start", start))
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, message_handler))
+
+    job_queue.start()
 
     application.run_polling()
