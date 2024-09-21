@@ -2,6 +2,7 @@ from telegram import Update, ReplyKeyboardMarkup
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, CallbackContext, JobQueue
 from datetime import datetime, timedelta
 import asyncio
+from table import *
 
 
 main_keyboard = [['Мое расписание', 'Расписание других организаторов', 'Информация об участнике'],
@@ -40,13 +41,13 @@ async def message_handler(update: Update, context: CallbackContext) -> None:
         surname = context.user_data.get('surname')
 
         if text == 'Текущая точка':
-            await update.message.reply_text("Текущая точка: (информация из базы данных)")
+            await update.message.reply_text("Текущая точка:\n" + my_timetable_now(username))
 
         elif text == 'Дальнейшее расписание':
-            await update.message.reply_text('Дальнейшее расписание: (информация из базы данных)')
+            await update.message.reply_text(my_timetable_continue(username))
 
         elif text == 'Все расписание':
-            await update.message.reply_text("Полное расписание: (информация из базы данных)")
+            await update.message.reply_text("Полное расписание:\n" + my_timetable_all(username))
 
         elif text == 'Назад':
             await update.message.reply_text(
