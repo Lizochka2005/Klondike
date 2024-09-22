@@ -26,11 +26,6 @@ async def message_handler(update: Update, context: CallbackContext) -> None:
     username = update.message.from_user.username
 
     if text == 'Мое расписание':
-        await update.message.reply_text("Введите вашу фамилию с большой буквы:")
-        context.user_data['state'] = 'waiting_for_surname'
-
-    elif context.user_data.get('state') == 'waiting_for_surname':
-        context.user_data['surname'] = text 
         await update.message.reply_text(
             "Выберите действие:",
             reply_markup=ReplyKeyboardMarkup(my_schedule_keyboard, one_time_keyboard=True, resize_keyboard=True)
@@ -38,16 +33,14 @@ async def message_handler(update: Update, context: CallbackContext) -> None:
         context.user_data['state'] = 'schedule_options'
 
     elif context.user_data.get('state') == 'schedule_options':
-        surname = context.user_data.get('surname')
-
-        if text == 'Текущая точка':
-            await update.message.reply_text("Текущая точка:\n" + my_timetable_now(username))
+        if text == 'Текущая точка': 
+            await update.message.reply_text("Текущая точка:\n" + str(my_timetable_now(username)))
 
         elif text == 'Дальнейшее расписание':
-            await update.message.reply_text(my_timetable_continue(username))
+            await update.message.reply_text(str(my_timetable_continue(username)))
 
         elif text == 'Все расписание':
-            await update.message.reply_text("Полное расписание:\n" + my_timetable_all(username))
+            await update.message.reply_text("Полное расписание:\n" + str(my_timetable_all(username)))
 
         elif text == 'Назад':
             await update.message.reply_text(
