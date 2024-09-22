@@ -18,7 +18,7 @@ name_columns = arr[0][9::]
 def my_timetable_all(username):
     text = ''
     for el in arr:
-        if el[2] == username:
+        if el[2][1::] == username:
             for i in range(len(name_columns)):
                 text += str(name_columns[i]) + ' ' + el[i+9] +'\n'
             return text
@@ -26,8 +26,8 @@ def my_timetable_all(username):
 def my_timetable_continue(username):
     text = ''
     for el in arr:
-        if el[2] == username:
-            print('Дальнейшее расписание: ')
+        if el[2][1::] == username:
+            text += 'Дальнейшее расписание: \n'
             for i in range(len(name_columns)):
                 if name_columns[i] >= time:
                     index = i
@@ -39,7 +39,7 @@ def my_timetable_continue(username):
 def my_timetable_now(username):
     text = ''
     for el in arr:
-        if el[2] == username:
+        if el[2][1::] == username:
             for i in range(len(name_columns)-1):
                 if name_columns[i] <= time and name_columns[i+1] > time:
                     text += str(name_columns[i]) + ' ' + el[i+9] +'\n'
@@ -52,26 +52,28 @@ def timetable_by_familia(familia):
             text += el[0] + ' ' + el[1] + '\n'
             text += 'Отдел: ' + el[5] + '\n'
             text += 'Сейчас на точке: '
-            text += my_timetable_now(el[2])
-            text += my_timetable_continue(el[2])
+            text += my_timetable_now(el[2][1::])
+            text += my_timetable_continue(el[2][1::])
             return text
 
 def timetable_by_username(username):
     text = ''
     for el in arr:
-        if el[2] == username:
+        if el[2][1::] == username:
             text += el[0] + ' ' + el[1] + '\n'
             text += 'Отдел: ' + el[5] + '\n'
             text += 'Сейчас на точке: '
-            text += my_timetable_now(el[2])
-            text += my_timetable_continue(el[2])
+            text += my_timetable_now(el[2][1::])
+            text += my_timetable_continue(el[2][1::])
             return text
 
 def timetable_department(name):
-    text = name.upper() + '\n'
+    text = str(name).upper() + '\n'
     for el in arr:
-        a = el[5].split(',')
-        if name.lower() in a:
+        a = el[5].split(', ')
+        if str(name).lower() in a:
              text += (el[0] + ' ' + el[1] + ': ').upper()
-             text += str(my_timetable_now(el[2]))
+             text += str(my_timetable_now(el[2][1::]))
     return text
+
+
