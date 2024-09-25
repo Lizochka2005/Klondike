@@ -98,21 +98,34 @@ async def message_handler(update: Update, context: CallbackContext) -> None:
         else:
             await update.message.reply_text(
                 "Выберите действие:",
-                reply_markup=ReplyKeyboardMarkup(main_keyboard, one_time_keyboard=True, resize_keyboard=True)
+                reply_markup=ReplyKeyboardMarkup(organizers_schedule_keyboard, one_time_keyboard=True,
+                                                 resize_keyboard=True)
             )
-            context.user_data['state'] = None
+            context.user_data['state'] = 'schedule_orginizers_options'
 
     elif context.user_data.get('state') == 'familia':
         familia = text
-        await update.message.reply_text(timetable_by_familia(familia))
+        if timetable_by_familia(familia) == 0:
+            await update.message.reply_text('Такой фамилии нет в таблице, перепроверь введённые данные!')
+        else:
+            await update.message.reply_text(timetable_by_familia(familia))
+        context.user_data['state'] = 'orginizers'
 
     elif context.user_data.get('state') == 'username':
         username = text
-        await update.message.reply_text(timetable_by_username(username))
+        if timetable_by_username(username) == 0:
+            await update.message.reply_text('Такого ника нет в таблице, перепроверь введённые данные!')
+        else:
+            await update.message.reply_text(timetable_by_username(username))
+        context.user_data['state'] = 'orginizers'
 
     elif context.user_data.get('state') == 'department':
         department = text
-        await update.message.reply_text(timetable_department(department))
+        if timetable_department(department) == 0:
+            await update.message.reply_text('Такого отдела нет в таблице, перепроверь введённые данные!')
+        else:
+            await update.message.reply_text(timetable_department(department))
+        context.user_data['state'] = 'schedule_orginizers_options'
 
     elif text == 'Информация об участнике':
         await update.message.reply_text(

@@ -55,6 +55,7 @@ def timetable_by_familia(familia):
             text += my_timetable_now(el[2][1::])
             text += my_timetable_continue(el[2][1::])
             return text
+    return 0
 
 def timetable_by_username(username):
     text = ''
@@ -66,14 +67,19 @@ def timetable_by_username(username):
             text += my_timetable_now(el[2][1::])
             text += my_timetable_continue(el[2][1::])
             return text
+    return 0
 
 def timetable_department(name):
     text = str(name).upper() + '\n'
+    flag = False
     for el in arr:
         a = el[5].split(', ')
         if str(name).lower() in a:
+             flag = True
              text += (el[0] + ' ' + el[1] + ': ').upper()
              text += str(my_timetable_now(el[2][1::]))
-    return text
+    if flag:
+        return text
+    return 0
 
 
