@@ -3,6 +3,7 @@ from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, fil
 from datetime import datetime, timedelta
 import asyncio
 from table import *
+from info_psrticipants import *
 
 
 main_keyboard = [['Мое расписание', 'Расписание других организаторов', 'Информация об участнике'],
@@ -105,7 +106,7 @@ async def message_handler(update: Update, context: CallbackContext) -> None:
 
     elif context.user_data.get('state') == 'familia':
         familia = text
-        if timetable_by_familia(familia) == 0:
+        if not timetable_by_familia(familia):
             await update.message.reply_text('Такой фамилии нет в таблице, перепроверь введённые данные!')
         else:
             await update.message.reply_text(timetable_by_familia(familia))
@@ -113,7 +114,7 @@ async def message_handler(update: Update, context: CallbackContext) -> None:
 
     elif context.user_data.get('state') == 'username':
         username = text
-        if timetable_by_username(username) == 0:
+        if not timetable_by_username(username):
             await update.message.reply_text('Такого ника нет в таблице, перепроверь введённые данные!')
         else:
             await update.message.reply_text(timetable_by_username(username))
@@ -121,7 +122,7 @@ async def message_handler(update: Update, context: CallbackContext) -> None:
 
     elif context.user_data.get('state') == 'department':
         department = text
-        if timetable_department(department) == 0:
+        if not timetable_department(department):
             await update.message.reply_text('Такого отдела нет в таблице, перепроверь введённые данные!')
         else:
             await update.message.reply_text(timetable_department(department))
@@ -132,6 +133,42 @@ async def message_handler(update: Update, context: CallbackContext) -> None:
             "Выберите способ поиска:",
             reply_markup=ReplyKeyboardMarkup(participant_info_keyboard, one_time_keyboard=True, resize_keyboard=True)
         )
+        context.user_data['state'] = 'info_participants_options'
+
+    elif context.user_data.get('state') == 'info_participants_options':
+        if text == 'По фамилии':
+            await update.message.reply_text('Введите фамилию участника с большой буквы:')
+            context.user_data['state'] = 'participant_familia'
+        elif text == 'По нику в ТГ':
+            await update.message.reply_text('Введите тг ник участника без @: ')
+            context.user_data['state'] = 'participant_username'
+        elif text == 'По номеру комнаты':
+            await update.message.reply_text('Введите номер комнаты: ')
+            context.user_data['state'] = 'room_num'
+
+    elif context.user_data.get('state') == 'participant_familia':
+        familia = text
+        if not info_by_familia(familia):
+            await update.message.reply_text('Такой фамилии нет в таблице, перепроверь введённые данные!')
+        else:
+            await update.message.reply_text(info_by_familia(familia))
+        context.user_data['state'] = 'info_participants_options'
+
+    elif context.user_data.get('state') == 'participant_username':
+        username = text
+        if not info_by_username(username):
+            await update.message.reply_text('Такого ника нет в таблице, перепроверь введённые данные!')
+        else:
+            await update.message.reply_text(info_by_username(username))
+        context.user_data['state'] = 'info_participants_options'
+
+    elif context.user_data.get('state') == 'room_num':
+        room_num = text
+        if info_by_room_num(room_num) == 0:
+            await update.message.reply_text('Такого номера комнаты нет в таблице, перепроверь введённые данные!')
+        else:
+            await update.message.reply_text(info_by_room_num(room_num))
+        context.user_data['state'] = 'info_participants_options'
 
     elif text == 'Назад':
         await update.message.reply_text(
