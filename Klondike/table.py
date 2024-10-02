@@ -25,6 +25,10 @@ def my_timetable_all(username):
 
 def my_timetable_continue(username):
     text = ''
+    if (today != '2024-10-09' and today != '2024-10-10') or (today == '2024-10-09' and time < datetime.time(9,30,0)):
+        text += 'Дальнейшее расписание: \n'
+        text += my_timetable_all(username)
+        return text
     for el in arr:
         if el[2][1::] == username:
             text += 'Дальнейшее расписание: \n'
@@ -38,6 +42,9 @@ def my_timetable_continue(username):
 
 def my_timetable_now(username):
     text = ''
+    if (today != '2024-10-09' and today != '2024-10-10') or (today == '2024-10-09' and time < datetime.time(9,30,0)):
+        text = 'Посвят ещё не начался!\n'
+        return text
     for el in arr:
         if el[2][1::] == username:
             for i in range(len(name_columns)-1):
