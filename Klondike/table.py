@@ -1,5 +1,6 @@
 import pandas as pd
 import datetime
+from datetime import timedelta
 import math
 
 dt = datetime.datetime.now()
@@ -24,6 +25,7 @@ def my_timetable_all(username):
 
 def my_timetable_continue(username):
     text = ''
+    index = 0
     # if (today != '2024-10-09' and today != '2024-10-10') or (today == '2024-10-09' and time < datetime.time(9,30,0)):
     #     text += 'Дальнейшее расписание: \n'
     #     text += my_timetable_all(username)
@@ -32,12 +34,15 @@ def my_timetable_continue(username):
         if el[1][1::] == username:
             text += 'Дальнейшее расписание: \n'
             for i in range(len(name_columns)):
-                t = name_columns[i].split('-')[0]
-                t = datetime.datetime.strptime(t, '%H:%M').time()
-                if t >= time:
+                start = name_columns[i].split('-')[0]
+                start = datetime.datetime.strptime(start, '%H:%M').time()
+                end = name_columns[i].split('-')[1]
+                end = datetime.datetime.strptime(end, '%H:%M').time()
+                if start <= time and end > time:
                     index = i
+                    print(index)
                     break
-            for i in range(index, len(name_columns)):
+            for i in range(index+1, len(name_columns)):
                 text += str(name_columns[i]) + ' ' + str(el[i+8]) +'\n'
             return text
 
@@ -113,3 +118,5 @@ def timetable_department(name):
 #                     text += 'Сейчас у тебя запланированно: '
 #                     text += str(el[i])
 #     return text
+
+

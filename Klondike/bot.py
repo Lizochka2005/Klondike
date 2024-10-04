@@ -32,7 +32,7 @@ async def message_handler(update: Update, context: CallbackContext) -> None:
 
     elif context.user_data.get('state') == 'schedule_options':
         if text == 'Текущая точка':
-            await update.message.reply_text("Текущая точка:\n" + str(my_timetable_now(username)), reply_markup=ReplyKeyboardMarkup(my_schedule_keyboard, one_time_keyboard=True, resize_keyboard=True))
+            await update.message.reply_text(("Текущая точка:\n" + str(my_timetable_now(username))), reply_markup=ReplyKeyboardMarkup(my_schedule_keyboard, one_time_keyboard=True, resize_keyboard=True))
             context.user_data['state'] = 'schedule_options'
 
         elif text == 'Дальнейшее расписание':
