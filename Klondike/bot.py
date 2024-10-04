@@ -170,33 +170,21 @@ async def message_handler(update: Update, context: CallbackContext) -> None:
     elif context.user_data.get('state') == 'participant_username':
         username = text
         if not info_by_username(username):
-            await update.message.reply_text('Такого ника нет в таблице, перепроверь введённые данные!')
-            await update.message.reply_text(
-                reply_markup=ReplyKeyboardMarkup(participant_info_keyboard, one_time_keyboard=True,
-                                                 resize_keyboard=True)
-            )
+            await update.message.reply_text('Такого ника нет в таблице, перепроверь введённые данные!', reply_markup=ReplyKeyboardMarkup(participant_info_keyboard, one_time_keyboard=True,
+                                                 resize_keyboard=True))
         else:
-            await update.message.reply_text(info_by_username(username))
-            await update.message.reply_text(
-                reply_markup=ReplyKeyboardMarkup(participant_info_keyboard, one_time_keyboard=True,
-                                                 resize_keyboard=True)
-            )
+            await update.message.reply_text(info_by_username(username), reply_markup=ReplyKeyboardMarkup(participant_info_keyboard, one_time_keyboard=True,
+                                                 resize_keyboard=True))
         context.user_data['state'] = 'info_participants_options'
 
     elif context.user_data.get('state') == 'room_num':
         room_num = text
         if info_by_room_num(room_num) == 0:
-            await update.message.reply_text('Такого номера комнаты нет в таблице, перепроверь введённые данные!')
-            await update.message.reply_text(
-                reply_markup=ReplyKeyboardMarkup(participant_info_keyboard, one_time_keyboard=True,
-                                                 resize_keyboard=True)
-            )
+            await update.message.reply_text('Такого номера комнаты нет в таблице, перепроверь введённые данные!', reply_markup=ReplyKeyboardMarkup(participant_info_keyboard, one_time_keyboard=True,
+                                                 resize_keyboard=True))
         else:
-            await update.message.reply_text(info_by_room_num(room_num))
-            await update.message.reply_text(
-                reply_markup=ReplyKeyboardMarkup(participant_info_keyboard, one_time_keyboard=True,
-                                                 resize_keyboard=True)
-            )
+            await update.message.reply_text(info_by_room_num(room_num), reply_markup=ReplyKeyboardMarkup(participant_info_keyboard, one_time_keyboard=True,
+                                                 resize_keyboard=True))
         context.user_data['state'] = 'info_participants_options'
 
     elif text == 'Назад':
@@ -215,14 +203,11 @@ async def message_handler(update: Update, context: CallbackContext) -> None:
 if __name__ == '__main__':
     application = ApplicationBuilder().token("7767795518:AAHyp07SVczH6joO3zD2_VbrtRZd24yzlqQ").build()
 
-    job_queue = JobQueue()
-    job_queue.set_application(application)
-
+    job_queue = application.job_queue
     # job_queue.run_repeating(reminder_job, interval=60)
 
     application.add_handler(CommandHandler("start", start))
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, message_handler))
 
-    job_queue.start()
 
     application.run_polling()
