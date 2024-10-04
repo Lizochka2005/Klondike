@@ -8,7 +8,7 @@ time = dt.time()
 
 
 df = pd.read_excel(r'C:\Users\Лиза\Downloads\СЕТКА.xlsx', sheet_name = 'ЛИЧНЫЕ СЕТКИ')
-n = 97 #количество значимых строк(кол-во оргов + первые 2)
+n = 109 #количество значимых строк(кол-во оргов + первые 2)
 
 arr = df.to_numpy()
 name_columns = arr[0][8::]
@@ -94,7 +94,7 @@ def timetable_department(name):
         return text
     return False
 
-# def remainder(username):
+# def reminder(username):
 #     text = ''
 #     for el in arr:
 #         if el[1][1::] == username:
