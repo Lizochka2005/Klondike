@@ -9,7 +9,7 @@ time = dt.time()
 
 
 df = pd.read_excel(r'C:\Users\Лиза\Downloads\СЕТКА.xlsx', sheet_name = 'ЛИЧНЫЕ СЕТКИ')
-n = 109 #количество значимых строк(кол-во оргов + первые 2)
+n = 108 #количество значимых строк(кол-во оргов + первые 2)
 
 arr = df.to_numpy()
 name_columns = arr[0][8::]
@@ -42,7 +42,7 @@ def my_timetable_continue(username):
                     index = i
                     print(index)
                     break
-            for i in range(index+1, len(name_columns)):
+            for i in range((index+1), len(name_columns)):
                 text += str(name_columns[i]) + ' ' + str(el[i+8]) +'\n'
             return text
 
